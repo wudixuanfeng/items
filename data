@@ -1,0 +1,112 @@
+import cv2
+import os
+import easygui as g
+msg = '请选择视频路径'
+title = '视频路径选择'
+path_1 = g.fileopenbox(msg, title, default='*', filetypes='.avi', multiple=False)
+#path_2=g.diropenbox(msg='请选择图片保存路径', title='图片保存路径选择', default='*')
+vc = cv2.VideoCapture(path_1) #读入视频文件
+c=0
+rval=vc.isOpened()
+#timeF = 1  #视频帧计数间隔频率
+while rval:   #循环读取视频帧
+    c = c + 1
+    rval, frame = vc.read()
+
+    if rval:
+#img为当前目录下新建的文件夹
+        # cv2.imwrite('E:/Recorder_2019-04-08_17-32-42/image/'+'ME630_408_Recorder_2019-04-08_17-32-42_'+str(c) + '.jpg', frame) #存储为图像
+        cv2.imwrite('D:/img/Recorder_2019-04-08_17-32-42_'+str(c) + '.jpg', frame)
+        cv2.waitKey(1)
+    else:
+        break
+vc.release()
+
+
+
+###########################################################
+
+#interface
+from tkinter import *
+import tkinter as tk
+from tkinter import filedialog
+import os
+import data2picture
+from data2picture import *
+
+
+window = tk.Tk()
+window.title('数据导入工具')
+window.geometry('500x300')
+
+global path_1
+path_1 = StringVar()
+global path_2
+path_2 = StringVar()
+global path_3
+path_3 = StringVar()
+global dict_data_1
+global dict_data_2
+
+
+def selectDataPath():
+    path_ = filedialog.askopenfilename()      #返回打开文件的路径
+    path_1.set(path_)       ####?????????什么作用
+
+
+
+
+
+
+
+
+Label(window,text = "数据路径:").grid(row = 0, column = 0)
+Entry(window, textvariable = path_1).grid(row = 0, column = 1)
+Button(window, text = "选择数据", command = selectDataPath).grid(row = 0, column = 2)
+
+
+def dataextract() :
+    dict_data_last = path_1.get().replace('\\', '/')
+
+    return dict_data_last
+def selectPicPath():
+    path_ = filedialog.askopenfilename()
+    path_2.set(path_)
+    # path_3=os.path.basename(path_2.get())
+    # return path_3
+
+
+def create():
+    def picnameback():
+        a = os.path.basename(path_2.get())
+
+
+        data2picture.filename1 = a
+
+
+
+    top = Toplevel()
+    top.title('图片输入')
+    e1 = Entry(top,textvariable=path_2,width=30).grid(row=1,column=0,padx=1,pady=1)
+    Button(top, text='选择图片',command=selectPicPath).grid(row=1,column=1,padx=1,pady=1)
+    Button(top, text='退出', command=picnameback).grid(row=1, column=2, padx=1, pady=1)
+    dict_data_last = path_1.get().replace('\\', '/')
+    # print(dict_data_last)
+    data2picture.dict_data_1 = dict_data_last
+    # print(data2picture.dict_data_1)
+
+
+def tkquit():
+    path_3 = os.path.basename(path_2.get())     #输出ME630_408_Recorder_2019-04-08_17-32-42_13.jpg
+
+
+    data2picture.filename1 = path_3
+    window.destroy()
+Button(window, text="确认", command=create).grid(row=0, column=3)
+Button(window, text="退出", command=tkquit).grid(row=2, column=2)
+
+
+
+window.mainloop()
+
+
